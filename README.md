@@ -1,9 +1,3 @@
-
-# Table of Contents
-
-1.  [org-school.el](#orgb4c9516)
-    1.  [org-school-insert-folder-pdf-exam-checkboxes-under-subheading](#orgf8d7f88)
-
 This is where I&rsquo;ll put some Emacs snippets that I&rsquo;ve made that are interesting
 enough to want to share with other people, but do not belong elsewhere.
 
