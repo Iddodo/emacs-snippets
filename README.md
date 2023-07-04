@@ -16,17 +16,13 @@ Snippets intended to make my university life generally easier.
 ## org-school-insert-folder-pdf-exam-checkboxes-under-subheading
 
 ![img](./media/checkboxes.gif)
-  Under some heading for a course, prompt user for a directory
-   in which they store its exams. Then create a subheading called \\&ldquo;EXAMS\\&rdquo;,
-   under which all relevant exam PDF files will appear in the form of
-   checkboxes.
-   The idea was that I would use this to organize the methodology of
-   solving exams.
 
-This function is obviously very tailored to my use case, and currently
-it does not offer any customization, and is not as clever as I would
-like it to be, but it definitely does the trick.
+Under some heading for a course, prompt user for a directory
+in which they store its exams. Then create a subheading called "EXAMS",
+under which all relevant exam PDF files will appear in the form of checkboxes.
+The idea was that I would use this to organize the methodology of solving exams.
 
-I might make an effort to generalize the way it works in the future,
-and might even expand the idea to generate more useful workflows.
+This function is obviously very tailored to my use case, and currently it does not offer any customization, and is not as clever as I would like it to be, but it definitely does the trick.
+
+I might make an effort to generalize the way it works in the future, and might even expand the idea to generate more useful workflows.
 
