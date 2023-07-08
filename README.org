@@ -1,0 +1,105 @@
+#+title: My (Interesting?) Emacs Snippets
+
+This is where I'll put some Emacs snippets that I've made that are interesting
+enough to want to share with other people, but do not belong elsewhere.
+
+I might develop some of these snippets further someday.
+
+* macOS related
+** Use AirDrop-CLI to AirDrop files from within Emacs
+This is a game changer as far as I'm concerned,
+and it's helping me tremendously during my exams.
+
+It even automatically picks up your currently opened file!
+
+This uses the awesome CLI tool for AirDrop, which can be found [[https://github.com/vldmrkl/airdrop-cli][here]].
+
+#+attr_html: :width 300px
+[[./media/airdrop-cli-prompt.gif]]
+
+#+begin_src emacs-lisp
+(defun airdrop-cli-prompt-run ()
+  (interactive)
+  (let* ((buffer-fname (buffer-file-name))
+         (buffer-fname-stripped (file-name-nondirectory buffer-fname))
+         (buffer-dir (file-name-directory buffer-fname))
+         (target-fname
+          (read-file-name (concat  "File (default: '" buffer-fname-stripped "')") buffer-dir buffer-fname-stripped)))
+
+    (unless (file-exists-p target-fname)
+      (error "File does not exist."))
+    (call-process-shell-command  (concat "airdrop " target-fname))))
+#+end_src
+
+
+
+
+* School related
+Snippets intended to make my university life generally easier.
+
+** org-school-insert-folder-pdf-exam-checkboxes-under-subheading
+[[./media/checkboxes.gif]]
+  Under some heading for a course, prompt user for a directory
+   in which they store its exams. Then create a subheading called \"EXAMS\",
+   under which all relevant exam PDF files will appear in the form of
+   checkboxes.
+   The idea was that I would use this to organize the methodology of
+   solving exams.
+
+   This function is obviously very tailored to my use case, and currently
+   it does not offer any customization, and is not as clever as I would
+   like it to be, but it definitely does the trick.
+
+   I might make an effort to generalize the way it works in the future,
+   and might even expand the idea to generate more useful workflows.
+
+
+   #+begin_src emacs-lisp
+(defun org-school-insert-folder-pdf-exam-checkboxes-under-subheading ()
+  "Under some heading for a course, prompt user for a directory
+   in which they store its exams. Then create a subheading called \"EXAMS\",
+   under which all relevant exam PDF files will appear in the form of
+   checkboxes.
+   The idea was that I would use this to organize the methodology of
+   solving exams.
+
+   This function is obviously very tailored to my use case, and currently
+   it does not offer any customization, and is not as clever as I would
+   like it to be, but it definitely does the trick.
+
+   I might make an effort to generalize the way it works in the future,
+   and might even expand the idea to generate more useful workflows."
+  (interactive)
+  (let* ((dir (read-file-name "Directory: " "~/Notes/"))
+         (bad-regex (rx (and
+                         (*? anything)
+                         (or "sol" "Sol" "פתרון" "Appendix" "Cover")
+                         (*? anything) eol)))
+         (pdf-files
+          (seq-filter (apply-partially
+                       (lambda (ext file) (and (string= ext (file-name-extension file))
+                                               (not (string-match bad-regex file)))) "pdf")
+
+                      (directory-files dir))))
+
+    (unless (f-directory? dir)
+      (error "Directory does not exist."))
+    (when (directory-empty-p dir)
+      (error "Directory is empty."))
+    (unless pdf-files
+      (error "No potential exam PDF files in directory."))
+    ;; Place checkboxes
+    (save-excursion
+      (let* ((file-to-checkbox (lambda (f)
+                                 (concat "- [ ] " (org-cliplink-org-mode-link-transformer
+                                                   (concat "pdf:" dir f) (file-name-sans-extension f)))))
+             (checkbox-seq (mapcar file-to-checkbox pdf-files)))
+        (org-insert-subheading (org-current-level))
+        (insert (concat  "EXAMS " "[0/" (number-to-string (length pdf-files)) "]"))
+        (open-line 1)
+        (next-line)
+        (set-mark-command nil)
+        (insert (string-join checkbox-seq  "\n"))
+        (indent-region (region-beginning) (region-end))
+        (deactivate-mark)))))
+   #+end_src
