@@ -28,7 +28,7 @@ This uses the awesome CLI tool for AirDrop, which can be found [[https://github.
 
     (unless (file-exists-p target-fname)
       (error "File does not exist."))
-    (call-process-shell-command  (concat "airdrop " target-fname))))
+    (call-process "airdrop"  nil nil nil  target-fname)))
 #+end_src
 
 
