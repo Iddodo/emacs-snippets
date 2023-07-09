@@ -17,6 +17,8 @@ This uses the awesome CLI tool for AirDrop, which can be found [[https://github.
 #+attr_html: :width 300px
 [[./media/airdrop-cli-prompt.gif]]
 
+*** Prompt to send a single file over AirDrop
+
 #+begin_src emacs-lisp
 (defun airdrop-cli-prompt-run ()
   (interactive)
@@ -30,6 +32,51 @@ This uses the awesome CLI tool for AirDrop, which can be found [[https://github.
       (error "File does not exist."))
     (call-process "airdrop"  nil nil nil  target-fname)))
 #+end_src
+
+*** Send the contents of an entire directory over AirDrop
+#+begin_src emacs-lisp :tangle yes
+(defun airdrop-cli-share-directory-contents ()
+  (interactive)
+  (let* ((dir (file-name-directory (read-file-name "Directory: " (file-name-directory (buffer-file-name)))))
+         (dir-files (seq-difference (nthcdr 2 (directory-files dir 'full)) '(".DS_Store" ".git" ".gitignore"))))
+    (unless (f-directory? dir)
+      (error "Directory does not exist."))
+    (unless dir-files
+      (error "Directory is empty."))
+    (apply (apply-partially 'call-process "airdrop" nil nil nil) dir-files)))
+#+end_src
+
+
+*** Send the currently marked files in a Dired buffer over AirDrop
+#+begin_src emacs-lisp
+(defun dired-do-airdrop-marked-files ()
+  (interactive)
+  (unless (derived-mode-p 'dired-mode)
+    (error "This command can only be used in a dired buffer."))
+  (unless (dired-get-marked-files)
+    (error "No files were marked."))
+  (apply (apply-partially 'call-process "airdrop" nil nil nil) (dired-get-marked-files)))
+#+end_src
+
+
+*** Send a clipboard saved image as PNG over AirDrop
+#+begin_src emacs-lisp
+(defun airdrop-cli-png-from-clipboard ()
+  (interactive)
+  (let* ((tmp-dir-name ".airdrop-tmp")
+         (tmp-file-name "clipboard.png")
+         (tmp-file-path (concat tmp-dir-name "/" tmp-file-name))
+         (tmp-dir-exists-p (f-directory? tmp-dir-name)))
+
+    (unless tmp-dir-exists-p
+      (mkdir tmp-dir-name))
+
+    (call-process "pngpaste"  nil nil nil  tmp-file-path)
+    (call-process "airdrop" nil nil nil tmp-file-path)
+    (delete-file tmp-file-path)
+    (delete-directory tmp-dir-name)))
+#+end_src
+
 
 
 
