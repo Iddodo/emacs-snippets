@@ -22,23 +22,25 @@ This uses the awesome CLI tool for AirDrop, which can be found [[https://github.
 #+begin_src emacs-lisp
 (defun airdrop-cli-prompt-run ()
   (interactive)
-  (let* ((buffer-fname (buffer-file-name))
-         (buffer-fname-stripped (file-name-nondirectory buffer-fname))
-         (buffer-dir (file-name-directory buffer-fname))
-         (target-fname
-          (read-file-name (concat  "File (default: '" buffer-fname-stripped "')") buffer-dir buffer-fname-stripped)))
-
-    (unless (file-exists-p target-fname)
-      (error "File does not exist."))
-    (call-process "airdrop"  nil nil nil  target-fname)))
+  (let ((target-fname
+          (read-file-name "File: " default-directory (buffer-file-name))))
+         (unless (file-exists-p target-fname)
+           (error "File does not exist."))
+         (call-process "airdrop" nil nil nil target-fname)))
 #+end_src
 
 *** Send the contents of an entire directory over AirDrop
 #+begin_src emacs-lisp :tangle yes
 (defun airdrop-cli-share-directory-contents ()
   (interactive)
-  (let* ((dir (file-name-directory (read-file-name "Directory: " (file-name-directory (buffer-file-name)))))
-         (dir-files (seq-difference (nthcdr 2 (directory-files dir 'full)) '(".DS_Store" ".git" ".gitignore"))))
+  (let* ((dir (file-name-directory (read-file-name "Directory: " default-directory)))
+         (dir-files (seq-difference (directory-files dir 'full)
+                                    (mapcar (apply-partially 'concat default-directory)
+                                            '("."
+                                              ".."
+                                              ".git"
+                                             ".gitignore"
+                                             ".DS_Store")))))
     (unless (f-directory? dir)
       (error "Directory does not exist."))
     (unless dir-files
