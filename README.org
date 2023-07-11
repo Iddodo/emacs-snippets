@@ -13,6 +13,7 @@ and it's helping me tremendously during my exams.
 It even automatically picks up your currently opened file!
 
 This uses the awesome CLI tool for AirDrop, which can be found [[https://github.com/vldmrkl/airdrop-cli][here]].
+
 (Shameless plug: also happens to be my [[https://github.com/vldmrkl/airdrop-cli/pull/13][first pull request on GitHub]])
 
 #+attr_html: :width 300px
