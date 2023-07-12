@@ -7,6 +7,10 @@ I might develop some of these snippets further someday.
 
 * macOS related
 ** Use AirDrop-CLI to AirDrop files from within Emacs
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/git/dotfiles/.doom.d/org-generated/airdrop.el
+:END:
+
 This is a game changer as far as I'm concerned,
 and it's helping me tremendously during my exams.
 
@@ -82,10 +86,53 @@ This uses the awesome CLI tool for AirDrop, which can be found [[https://github.
 #+end_src
 
 
+*** Integration to my Emacs config
+Since I use this feature so much, I  had integrated this feature
+into my config as a minor mode, and bound it to =dired= and =pdf-view= type buffers.
 
+**** Minor Mode Definition
+#+begin_src emacs-lisp
+(defvar airdrop-minor-mode-map
+  (let ((amap (make-sparse-keymap)))
+    (define-key amap (kbd "C-c a r") #'airdrop-cli-prompt-run)
+    (define-key amap (kbd "C-c a k") #'airdrop-cli-killall)
+    (define-key amap (kbd "C-c a m")#'dired-do-airdrop-marked-files)
+    (define-key amap (kbd "C-c a d") #'airdrop-cli-share-directory-contents)
+    (define-key amap (kbd "C-c a p") #'airdrop-cli-png-from-clipboard)
+    amap))
 
+(define-minor-mode airdrop-minor-mode
+  "A set of configurations and keybinding for
+   using AirDrop inside the terminal."
+  :lighter "AirDrop"
+  :keymap airdrop-minor-mode-map)
+
+#+end_src
+
+**** Bind to target modes
+***** org-mode
+#+begin_src emacs-lisp
+(use-package! org-mode
+  :hook (org-mode . airdrop-minor-mode))
+#+end_src
+
+***** pdf-view
+#+begin_src emacs-lisp
+(use-package! pdf-tools
+  :hook (pdf-view-mode . airdrop-minor-mode))
+#+end_src
+
+***** dired
+#+begin_src emacs-lisp
+(use-package! dired
+  :hook (dired-mode . airdrop-minor-mode))
+#+end_src
 
 * School related
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/git/dotfiles/.doom.d/org-generated/school.el
+:END:
+
 Snippets intended to make my university life generally easier.
 
 ** org-school-insert-folder-pdf-exam-checkboxes-under-subheading
