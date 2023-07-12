@@ -95,14 +95,13 @@ into my config as a minor mode, and bound it to =dired= and =pdf-view= type buff
 (defvar airdrop-minor-mode-map
   (let ((amap (make-sparse-keymap)))
     (define-key amap (kbd "C-c a r") #'airdrop-cli-prompt-run)
-    (define-key amap (kbd "C-c a k") #'airdrop-cli-killall)
     (define-key amap (kbd "C-c a m")#'dired-do-airdrop-marked-files)
     (define-key amap (kbd "C-c a d") #'airdrop-cli-share-directory-contents)
     (define-key amap (kbd "C-c a p") #'airdrop-cli-png-from-clipboard)
     amap))
 
 (define-minor-mode airdrop-minor-mode
-  "A set of configurations and keybinding for
+  "A set of configurations and keybindings for
    using AirDrop inside the terminal."
   :lighter "AirDrop"
   :keymap airdrop-minor-mode-map)
@@ -112,7 +111,7 @@ into my config as a minor mode, and bound it to =dired= and =pdf-view= type buff
 **** Bind to target modes
 ***** org-mode
 #+begin_src emacs-lisp
-(use-package! org-mode
+
   :hook (org-mode . airdrop-minor-mode))
 #+end_src
 
@@ -137,6 +136,7 @@ Snippets intended to make my university life generally easier.
 
 ** org-school-insert-folder-pdf-exam-checkboxes-under-subheading
 [[./media/checkboxes.gif]]
+
   Under some heading for a course, prompt user for a directory
    in which they store its exams. Then create a subheading called \"EXAMS\",
    under which all relevant exam PDF files will appear in the form of
